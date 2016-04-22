@@ -1,0 +1,317 @@
+#include<iostream>
+#include<fstream>
+#include<string>
+#include<list>
+#include<iterator>
+#include<algorithm>
+#include<functional>
+#include<numeric>
+#include<cmath>
+using namespace std;
+
+
+class AbsDigit
+{
+private:
+	int number;
+
+public:
+	void SetDigit(const int x);
+	int GetDigit() const;
+	virtual void Output(ostream& toStream)const = 0;
+	virtual bool IsLessThan(int *x) = 0;
+};
+void AbsDigit::SetDigit(const int x)
+{
+	number = x;
+}
+int AbsDigit::GetDigit() const
+{
+	return number;
+}
+
+class Expected : public AbsDigit
+{
+private:
+	int number;
+public:
+	Expected();
+	Expected(int x);
+	Expected(const Expected &x);
+
+	void SetExp(int x);
+	int Get();
+	void Output(ostream& toStream)const;
+	bool IsLessThan(int *x);
+	friend ostream& operator<<(ostream& toStream, const Expected& obj);
+	friend istream& operator>>(istream& fromStream, Expected& obj);
+	Expected operator=(const Expected x);
+	bool operator==(const Expected x);
+};
+Expected::Expected()
+{
+	this->number = 0;
+}
+Expected::Expected(int x)
+{
+	this->number = x;
+}
+Expected::Expected(const Expected &x)
+{
+	this->number = x.number;
+}
+void Expected::SetExp(int x)
+{
+	this->number = x;
+}
+int Expected::Get()
+{
+	return this->number;
+}
+void Expected::Output(ostream& toStream)const
+{
+	toStream << number << endl;;
+}
+bool Expected::IsLessThan(int *x)
+{
+	if (number<*x)
+	{
+		return true;
+	}
+	else return false;
+}
+ostream& operator<<(ostream& toStream, const Expected& obj)
+{
+	obj.Output(toStream);
+	return toStream;
+}
+istream& operator>>(istream& fromStream, Expected& obj)
+{
+	fromStream >> obj.number;
+	return fromStream;
+}
+Expected Expected::operator=(const Expected x)
+{
+	this->number = x.number;
+	return *this;
+}
+bool Expected::operator==(const Expected x)
+{
+	return this->number == x.number;
+}
+
+class Observed : public AbsDigit
+{
+private:
+	int number;
+public:
+	Observed();
+	Observed(int x);
+	Observed(const Observed &x);
+
+	void SetObs(int x);
+	int Get();
+	void Output(ostream& toStream)const;
+	bool IsLessThan(int *x);
+	friend ostream& operator<<(ostream& toStream, const Observed& obj);
+	friend istream& operator>>(istream& fromStream, Observed& obj);
+	Observed operator=(const Observed x);
+	bool operator==(const Observed x);
+};
+Observed::Observed()
+{
+	this->number = 0;
+}
+Observed::Observed(int x)
+{
+	this->number = x;
+}
+Observed::Observed(const Observed &x)
+{
+	this->number = x.number;
+}
+void Observed::SetObs(int x)
+{
+	this->number = x;
+}
+int Observed::Get()
+{
+	return this->number;
+}
+void Observed::Output(ostream& toStream)const
+{
+	toStream << number << endl;;
+}
+bool Observed::IsLessThan(int *x)
+{
+	if (number<*x)
+	{
+		return true;
+	}
+	else return false;
+}
+ostream& operator<<(ostream& toStream, const Observed& obj)
+{
+	obj.Output(toStream);
+	return toStream;
+}
+istream& operator>>(istream& fromStream, Observed& obj)
+{
+	fromStream >> obj.number;
+	return fromStream;
+}
+Observed Observed::operator=(const Observed x)
+	{
+		this->number = x.number;
+		return *this;
+	}
+bool Observed::operator==(const Observed x)
+{
+	return this->number == x.number;
+}
+
+class CGoodnessOfFit : public Observed, public Expected
+{
+private:
+     list<AbsDigit*> m_lData; 
+     list<AbsDigit*> m_lObs; 
+     int m_iTotalFreqDiff; 
+double m_dChiCalc; 
+double m_dChiAlpha; 
+
+public:
+
+	CGoodnessOfFit(const char* strFileNameExp, const char* strFileNameObs);
+	void CalcTotalFreqDiff();
+	void SetChiAlpha(double ChiValue);
+	bool CalcChi();
+	bool CalcGofF() const;
+	void SetData(const int iDigit, const int iExpected, const int iObserved);
+	void GetData(double& dChiCalc, double& dChiAlpha) const;
+	void writeToCout();
+	bool IsFoundExpNumber(const int& iToFind);
+	int GetTotalFreqDiff();
+	friend istream& operator>> (istream& fromStream, AbsDigit* &obj);
+};
+
+	CGoodnessOfFit::CGoodnessOfFit(const char* strFileNameExp, const char* strFileNameObs)
+	{
+
+		ifstream iStream(strFileNameExp);
+
+		if (iStream.good())
+		{
+
+			copy(istream_iterator<AbsDigit*>(iStream), istream_iterator<AbsDigit*>(),
+				back_inserter(m_lData));
+		}
+
+		ifstream iStream1(strFileNameObs);
+
+		if (iStream1.good())
+		{
+
+			copy(istream_iterator<AbsDigit*>(iStream), istream_iterator<AbsDigit*>(),
+				back_inserter(m_lObs));
+		}
+	}
+
+
+int Sum(class AbsDigit* &ob, class AbsDigit* &ob1)
+{
+	return (ob->GetDigit() + ob1->GetDigit());
+}
+
+void CGoodnessOfFit::CalcTotalFreqDiff()
+{
+	this->m_iTotalFreqDiff = GetTotalFreqDiff;
+}
+
+bool CGoodnessOfFit::CalcChi()
+{
+	int Oi;
+	int Ei;
+	Oi = accumulate(m_lObs.begin(), m_lObs.end(), Oi, Sum);
+	Ei = accumulate(m_lData.begin(), m_lData.end(), Ei, Sum);
+
+
+	m_dChiCalc = sqrt(((Oi - Ei) ^ 2) / Ei);
+
+	if (m_dChiCalc) return true;
+	else return false;
+}
+
+void CGoodnessOfFit::SetChiAlpha(double ChiValue)
+{
+	m_dChiAlpha = ChiValue;
+}
+
+bool CGoodnessOfFit::CalcGofF()	const
+{
+	if (m_dChiCalc < m_dChiAlpha) return true;
+	else return false;
+}
+
+void CGoodnessOfFit::SetData(const int iDigit, const int iExpected, const int iObserved)
+{
+	SetDigit(iDigit);
+	SetExp(iExpected);
+	SetObs(iObserved);
+
+}
+
+void CGoodnessOfFit::GetData(double& dChiCalc, double& dChiAlpha) const
+{
+	cout << dChiCalc << " - " << dChiAlpha << endl;
+};
+void CGoodnessOfFit::writeToCout()
+{
+	cout << m_iTotalFreqDiff << endl;
+	cout << calcTotalFreqDiff() << endl;
+	cout << CalcChi() << endl;
+	cout << CalcGofF() << endl;
+
+}
+
+class Search
+{
+private:
+	int iToFind_val;
+public:
+	Search(int val);
+	bool operator () (AbsDigit* &pointer) const;
+};
+
+Search::Search(int val)
+{
+	iToFind_val = val;
+}
+bool Search::operator () (AbsDigit* &pointer) const
+{
+	return (pointer->GetDigit() == iToFind_val);
+}
+bool CGoodnessOfFit::IsFoundExpNumber(const int& iToFind)
+{
+	list::iterator where;
+	where = find_if(m_lData.begin(), m_lData.end(), Search(iToFind));
+
+	return true;
+}
+
+int CGoodnessOfFit::GetTotalFreqDiff()
+{
+	int Exp;
+	int Obs;
+
+	Exp = accumulate(m_lData.begin(), m_lData.end(), Exp, Sum);
+	Obs = accumulate(m_lObs.begin(), m_lObs.end(), Obs, Sum);
+
+	return (Exp - Obs);
+}
+
+
+int main()
+{
+	system("pause");
+	return 0;
+};
