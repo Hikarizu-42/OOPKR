@@ -254,7 +254,7 @@ bool CGoodnessOfFit::CalcGofF()	const
 
 void CGoodnessOfFit::SetData(const int iDigit, const int iExpected, const int iObserved)
 {
-	SetDigit(iDigit);
+	AbsDigit::SetDigit(iDigit);
 	SetExp(iExpected);
 	SetObs(iObserved);
 
