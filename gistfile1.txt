@@ -224,7 +224,7 @@ int Sum(class AbsDigit* &ob, class AbsDigit* &ob1)
 
 void CGoodnessOfFit::CalcTotalFreqDiff()
 {
-	this->m_iTotalFreqDiff = GetTotalFreqDiff;
+	this->m_iTotalFreqDiff = GetTotalFreqDiff();
 }
 
 bool CGoodnessOfFit::CalcChi()
@@ -267,7 +267,6 @@ void CGoodnessOfFit::GetData(double& dChiCalc, double& dChiAlpha) const
 void CGoodnessOfFit::writeToCout()
 {
 	cout << m_iTotalFreqDiff << endl;
-	cout << calcTotalFreqDiff() << endl;
 	cout << CalcChi() << endl;
 	cout << CalcGofF() << endl;
 
