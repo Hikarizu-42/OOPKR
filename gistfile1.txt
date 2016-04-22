@@ -189,7 +189,7 @@ public:
 	void SetData(const int iDigit, const int iExpected, const int iObserved);
 	void GetData(double& dChiCalc, double& dChiAlpha) const;
 	void writeToCout();
-	bool IsFoundExpNumber(const int& iToFind);
+	bool FindIf(const int& iToFind);
 	int GetTotalFreqDiff();
 	friend istream& operator>> (istream& fromStream, AbsDigit* &obj);
 };
@@ -289,10 +289,10 @@ bool Search::operator () (AbsDigit* &pointer) const
 {
 	return (pointer->GetDigit() == iToFind_val);
 }
-bool CGoodnessOfFit::IsFoundExpNumber(const int& iToFind)
+bool CGoodnessOfFit::FindIf(const int& iToFind)
 {
-	list::iterator where;
-	where = find_if(m_lData.begin(), m_lData.end(), Search(iToFind));
+	list<AbsDigit*>::iterator searchCriteria;
+	searchCriteria = find_if(m_lData.begin(), m_lData.end(), Search(iToFind));
 
 	return true;
 }
