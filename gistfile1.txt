@@ -16,14 +16,14 @@ private:
 	int number;
 
 public:
-	void SetDigit(const int x);
+	void SetDigit(const int val);
 	int GetDigit() const;
 	virtual void Output(ostream& toStream)const = 0;
-	virtual bool IsLessThan(int *x) = 0;
+	virtual bool IsLessThan(int *val) = 0;
 };
-void AbsDigit::SetDigit(const int x)
+void AbsDigit::SetDigit(const int val)
 {
-	number = x;
+	number = val;
 }
 int AbsDigit::GetDigit() const
 {
@@ -36,33 +36,33 @@ private:
 	int number;
 public:
 	Expected();
-	Expected(int x);
-	Expected(const Expected &x);
+	Expected(int val);
+	Expected(const Expected &val);
 
-	void SetExp(int x);
+	void SetExp(int val);
 	int Get();
 	void Output(ostream& toStream)const;
-	bool IsLessThan(int *x);
+	bool IsLessThan(int *val);
 	friend ostream& operator<<(ostream& toStream, const Expected& obj);
 	friend istream& operator>>(istream& fromStream, Expected& obj);
-	Expected operator=(const Expected x);
-	bool operator==(const Expected x);
+	Expected operator=(const Expected val);
+	bool operator==(const Expected val);
 };
 Expected::Expected()
 {
 	this->number = 0;
 }
-Expected::Expected(int x)
+Expected::Expected(int val)
 {
-	this->number = x;
+	this->number = val;
 }
-Expected::Expected(const Expected &x)
+Expected::Expected(const Expected &val)
 {
-	this->number = x.number;
+	this->number = val.number;
 }
-void Expected::SetExp(int x)
+void Expected::SetExp(int val)
 {
-	this->number = x;
+	this->number = val;
 }
 int Expected::Get()
 {
@@ -72,9 +72,9 @@ void Expected::Output(ostream& toStream)const
 {
 	toStream << number << endl;;
 }
-bool Expected::IsLessThan(int *x)
+bool Expected::IsLessThan(int *val)
 {
-	if (number<*x)
+	if (number<*val)
 	{
 		return true;
 	}
@@ -90,14 +90,14 @@ istream& operator>>(istream& fromStream, Expected& obj)
 	fromStream >> obj.number;
 	return fromStream;
 }
-Expected Expected::operator=(const Expected x)
+Expected Expected::operator=(const Expected val)
 {
-	this->number = x.number;
+	this->number = val.number;
 	return *this;
 }
-bool Expected::operator==(const Expected x)
+bool Expected::operator==(const Expected val)
 {
-	return this->number == x.number;
+	return this->number == val.number;
 }
 
 class Observed : public AbsDigit
@@ -106,33 +106,33 @@ private:
 	int number;
 public:
 	Observed();
-	Observed(int x);
-	Observed(const Observed &x);
+	Observed(int val);
+	Observed(const Observed &val);
 
-	void SetObs(int x);
+	void SetObs(int val);
 	int Get();
 	void Output(ostream& toStream)const;
-	bool IsLessThan(int *x);
+	bool IsLessThan(int *val);
 	friend ostream& operator<<(ostream& toStream, const Observed& obj);
 	friend istream& operator>>(istream& fromStream, Observed& obj);
-	Observed operator=(const Observed x);
-	bool operator==(const Observed x);
+	Observed operator=(const Observed val);
+	bool operator==(const Observed val);
 };
 Observed::Observed()
 {
 	this->number = 0;
 }
-Observed::Observed(int x)
+Observed::Observed(int val)
 {
-	this->number = x;
+	this->number = val;
 }
-Observed::Observed(const Observed &x)
+Observed::Observed(const Observed &val)
 {
-	this->number = x.number;
+	this->number = val.number;
 }
-void Observed::SetObs(int x)
+void Observed::SetObs(int val)
 {
-	this->number = x;
+	this->number = val;
 }
 int Observed::Get()
 {
@@ -142,9 +142,9 @@ void Observed::Output(ostream& toStream)const
 {
 	toStream << number << endl;;
 }
-bool Observed::IsLessThan(int *x)
+bool Observed::IsLessThan(int *val)
 {
-	if (number<*x)
+	if (number<*val)
 	{
 		return true;
 	}
@@ -160,14 +160,14 @@ istream& operator>>(istream& fromStream, Observed& obj)
 	fromStream >> obj.number;
 	return fromStream;
 }
-Observed Observed::operator=(const Observed x)
+Observed Observed::operator=(const Observed val)
 	{
-		this->number = x.number;
+		this->number = val.number;
 		return *this;
 	}
-bool Observed::operator==(const Observed x)
+bool Observed::operator==(const Observed val)
 {
-	return this->number == x.number;
+	return this->number == val.number;
 }
 
 class CGoodnessOfFit : public Observed, public Expected
@@ -217,9 +217,9 @@ public:
 	}
 
 
-int Sum(class AbsDigit* &ob, class AbsDigit* &ob1)
+int Sum(class AbsDigit* &ob1, class AbsDigit* &ob2)
 {
-	return (ob->GetDigit() + ob1->GetDigit());
+	return (ob1->GetDigit() + ob2->GetDigit());
 }
 
 void CGoodnessOfFit::CalcTotalFreqDiff()
@@ -307,7 +307,6 @@ int CGoodnessOfFit::GetTotalFreqDiff()
 
 	return (Exp - Obs);
 }
-
 
 int main()
 {
