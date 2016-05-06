@@ -181,27 +181,27 @@ public:
 	void GetData(double& dChiCalc, double& dChiAlpha) const;
 	void writeToCout();
 	int GetTotalFreqDiff();
-	//friend istream& operator>> (istream& fromStream, AbsDigit* &obj);
+	friend istream& operator>> (istream& fromStream, AbsDigit* &obj);
 };
 
 CGoodnessOfFit::CGoodnessOfFit(const char* strFileNameExp, const char* strFileNameObs)
 {
 
-	ifstream iStream(strFileNameExp);
-
-	if (iStream.good())
-	{
-
-		copy(istream_iterator<AbsDigit*>(iStream), istream_iterator<AbsDigit*>(),
-			back_inserter(m_lExp));
-	}
-
-	ifstream iStream1(strFileNameObs);
+	ifstream iStream1(strFileNameExp);
 
 	if (iStream1.good())
 	{
 
-		copy(istream_iterator<AbsDigit*>(iStream), istream_iterator<AbsDigit*>(),
+		copy(istream_iterator<Expected*>(iStream1), istream_iterator<Expected*>(),
+			back_inserter(m_lExp));
+	}
+
+	ifstream iStream2(strFileNameObs);
+
+	if (iStream2.good())
+	{
+
+		copy(istream_iterator<Observed*>(iStream2), istream_iterator<Observed*>(),
 			back_inserter(m_lObs));
 	}
 }
@@ -266,7 +266,7 @@ void CGoodnessOfFit::GetData(double& dChiCalc, double& dChiAlpha) const
 };
 void CGoodnessOfFit::writeToCout()
 {
-
+	//TODO
 }
 
 class Search
