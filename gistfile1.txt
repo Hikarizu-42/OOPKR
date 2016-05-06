@@ -165,8 +165,8 @@ bool Observed::operator==(const Observed val)
 class CGoodnessOfFit
 {
 private:
-	list<AbsDigit*> m_lExp;
-	list<AbsDigit*> m_lObs;
+	list<Expected*> m_lExp;
+	list<Observed*> m_lObs;
 	int m_iTotalFreqDiff;
 	double m_dChiCalc;
 	double m_dChiAlpha;
@@ -252,11 +252,7 @@ void CGoodnessOfFit::SetData(const int iDigit, const int iExpected, const int iO
 			break;
 		}
 		first++;
-		//	first._Ptr->_Myval->setExpectedValue(iExpected);
-		//	spisukdve.begin()._Ptr->_Myval->setObservedValue(iObserved);
-		//	break;
-		//}
-		//first++;	
+		//TODO	
 	}
 }
 
