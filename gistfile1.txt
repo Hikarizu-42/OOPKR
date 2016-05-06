@@ -44,7 +44,7 @@ public:
 	void Output(ostream& toStream)const;
 	bool IsLessThan(int *val);
 	friend ostream& operator<<(ostream& toStream, const Expected& obj);
-	friend istream& operator>>(istream& fromStream, Expected& obj);
+	friend istream& operator>>(istream& fromStream, Expected* obj);
 	Expected operator=(const Expected val);
 	bool operator==(const Expected val);
 };
@@ -81,9 +81,9 @@ ostream& operator<<(ostream& toStream, const Expected& obj)
 	obj.Output(toStream);
 	return toStream;
 }
-istream& operator>>(istream& fromStream, Expected& obj)
+istream& operator>>(istream& fromStream, Expected* obj)
 {
-	fromStream >> obj.number;
+	fromStream >> obj->number;
 	return fromStream;
 }
 Expected Expected::operator=(const Expected val)
@@ -110,7 +110,7 @@ public:
 	void Output(ostream& toStream)const;
 	bool IsLessThan(int *val);
 	friend ostream& operator<<(ostream& toStream, const Observed& obj);
-	friend istream& operator>>(istream& fromStream, Observed& obj);
+	friend istream& operator>>(istream& fromStream, Observed* obj);
 	Observed operator=(const Observed val);
 	bool operator==(const Observed val);
 };
@@ -147,29 +147,29 @@ ostream& operator<<(ostream& toStream, const Observed& obj)
 	obj.Output(toStream);
 	return toStream;
 }
-istream& operator>>(istream& fromStream, Observed& obj)
+istream& operator>>(istream& fromStream, Observed* obj)
 {
-	fromStream >> obj.number;
+	fromStream >> obj->number;
 	return fromStream;
 }
 Observed Observed::operator=(const Observed val)
-	{
-		this->number = val.number;
-		return *this;
-	}
+{
+	this->number = val.number;
+	return *this;
+}
 bool Observed::operator==(const Observed val)
 {
 	return this->number == val.number;
 }
 
-class CGoodnessOfFit : public Observed, public Expected
+class CGoodnessOfFit
 {
 private:
-	list<AbsDigit*> m_lData; 
-	list<AbsDigit*> m_lObs; 
-	int m_iTotalFreqDiff; 
-	double m_dChiCalc; 
-	double m_dChiAlpha; 
+	list<AbsDigit*> m_lExp;
+	list<AbsDigit*> m_lObs;
+	int m_iTotalFreqDiff;
+	double m_dChiCalc;
+	double m_dChiAlpha;
 
 public:
 	CGoodnessOfFit(const char* strFileNameExp, const char* strFileNameObs);
@@ -180,9 +180,8 @@ public:
 	void SetData(const int iDigit, const int iExpected, const int iObserved);
 	void GetData(double& dChiCalc, double& dChiAlpha) const;
 	void writeToCout();
-	bool FindIf(const int& iToFind);
 	int GetTotalFreqDiff();
-	friend istream& operator>> (istream& fromStream, AbsDigit* &obj);
+	//friend istream& operator>> (istream& fromStream, AbsDigit* &obj);
 };
 
 CGoodnessOfFit::CGoodnessOfFit(const char* strFileNameExp, const char* strFileNameObs)
@@ -194,7 +193,7 @@ CGoodnessOfFit::CGoodnessOfFit(const char* strFileNameExp, const char* strFileNa
 	{
 
 		copy(istream_iterator<AbsDigit*>(iStream), istream_iterator<AbsDigit*>(),
-			back_inserter(m_lData));
+			back_inserter(m_lExp));
 	}
 
 	ifstream iStream1(strFileNameObs);
@@ -208,9 +207,9 @@ CGoodnessOfFit::CGoodnessOfFit(const char* strFileNameExp, const char* strFileNa
 }
 
 
-int Sum(class AbsDigit* &ob1, class AbsDigit* &ob2)
+int Sum(int obj, AbsDigit* ob2)
 {
-	return (ob1->GetDigit() + ob2->GetDigit());
+	return obj + ob2->GetDigit();
 }
 
 void CGoodnessOfFit::CalcTotalFreqDiff()
@@ -220,10 +219,10 @@ void CGoodnessOfFit::CalcTotalFreqDiff()
 
 double CGoodnessOfFit::CalcChi()
 {
-	int Oi;
-	int Ei;
+	int Oi = 0;
+	int Ei = 0;
 	Oi = accumulate(m_lObs.begin(), m_lObs.end(), Oi, Sum);
-	Ei = accumulate(m_lData.begin(), m_lData.end(), Ei, Sum);
+	Ei = accumulate(m_lExp.begin(), m_lExp.end(), Ei, Sum);
 
 	m_dChiCalc = sqrt(((Oi - Ei) ^ 2) / Ei);
 
@@ -242,10 +241,23 @@ bool CGoodnessOfFit::CalcGofF()	const
 
 void CGoodnessOfFit::SetData(const int iDigit, const int iExpected, const int iObserved)
 {
-	AbsDigit::SetDigit(iDigit);
-	SetExp(iExpected);
-	SetObs(iObserved);
-
+	//list<Expected*>::iterator first = m_lExp.begin();
+	//list<Expected*>::iterator last = m_lObs.end();
+	//while (first != last)
+	//{
+	//	if ((*first)->GetDigit() == iDigit)
+	//	{
+	//		(*first)->SetExp(iExpected);
+	//		(*m_lObs.begin())->SetDigit(iObserved);
+	//		break;
+	//	}
+	//	first++;
+	//	//	first._Ptr->_Myval->setExpectedValue(iExpected);
+	//	//	spisukdve.begin()._Ptr->_Myval->setObservedValue(iObserved);
+	//	//	break;
+	//	//}
+	//	//first++;	
+	//}
 }
 
 void CGoodnessOfFit::GetData(double& dChiCalc, double& dChiAlpha) const
@@ -254,9 +266,6 @@ void CGoodnessOfFit::GetData(double& dChiCalc, double& dChiAlpha) const
 };
 void CGoodnessOfFit::writeToCout()
 {
-	cout << m_iTotalFreqDiff << endl;
-	cout << CalcChi() << endl;
-	cout << CalcGofF() << endl;
 
 }
 
@@ -277,19 +286,12 @@ bool Search::operator () (AbsDigit* &pointer) const
 {
 	return (pointer->GetDigit() == iToFind_val);
 }
-bool CGoodnessOfFit::FindIf(const int& iToFind)
-{
-	list<AbsDigit*>::iterator searchCriteria;
-	searchCriteria = find_if(m_lData.begin(), m_lData.end(), Search(iToFind));
-	return true;
-}
-
 int CGoodnessOfFit::GetTotalFreqDiff()
 {
-	int Exp;
-	int Obs;
+	int Exp = 0;
+	int Obs = 0;
 
-	Exp = accumulate(m_lData.begin(), m_lData.end(), Exp, Sum);
+	Exp = accumulate(m_lExp.begin(), m_lExp.end(), Exp, Sum);
 	Obs = accumulate(m_lObs.begin(), m_lObs.end(), Obs, Sum);
 
 	return (Exp - Obs);
