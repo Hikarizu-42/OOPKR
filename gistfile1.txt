@@ -241,18 +241,20 @@ bool CGoodnessOfFit::CalcGofF()	const
 
 void CGoodnessOfFit::SetData(const int iDigit, const int iExpected, const int iObserved)
 {
-	list<Expected*>::iterator first = m_lExp.begin();
-	list<Expected*>::iterator last = m_lExp.end();
-	while (first != last)
+	list<Expected*>::iterator expStart = m_lExp.begin();
+	list<Expected*>::iterator expEnd = m_lExp.end();
+	list<Observed*>::iterator obsStart = m_lObs.begin();
+	list<Observed*>::iterator obsEnd = m_lObs.end();
+	while (expStart != expEnd)
 	{
-		if ((*first)->GetDigit() == iDigit)
+		if ((*expStart)->GetDigit() == iDigit)
 		{
-			(*first)->SetExp(iExpected);
-			(*m_lObs.begin())->SetDigit(iObserved);
+			(*expStart)->SetExp(iExpected);
+			(*obsStart)->SetObs(iObserved);
 			break;
 		}
-		first++;
-		//TODO	
+		expStart++;
+		obsStart++;
 	}
 }
 
@@ -262,7 +264,24 @@ void CGoodnessOfFit::GetData(double& dChiCalc, double& dChiAlpha) const
 };
 void CGoodnessOfFit::writeToCout()
 {
-	//TODO
+	list<Expected*>::iterator expStart = m_lExp.begin();
+	list<Expected*>::iterator expEnd = m_lExp.end();
+	list<Observed*>::iterator obsStart = m_lObs.begin();
+	list<Observed*>::iterator obsEnd = m_lObs.end();
+	while (expStart != expEnd)
+	{
+		cout << (*expStart)->GetDigit << " ";
+		(*expStart)->Output(cout);
+		(*obsStart)->Output(cout);
+		expStart++;
+		obsStart++;
+		cout << endl;
+		if (obsStart == obsEnd)
+		{
+			cout << "Observed contains more values than Expected" << endl;
+			break;
+		}
+	}
 }
 
 class Search
