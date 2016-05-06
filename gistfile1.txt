@@ -270,7 +270,7 @@ void CGoodnessOfFit::writeToCout()
 	list<Observed*>::iterator obsEnd = m_lObs.end();
 	while (expStart != expEnd)
 	{
-		cout << (*expStart)->GetDigit << " ";
+		cout << (*expStart)->GetDigit() << " ";
 		(*expStart)->Output(cout);
 		(*obsStart)->Output(cout);
 		expStart++;
