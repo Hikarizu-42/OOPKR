@@ -241,23 +241,23 @@ bool CGoodnessOfFit::CalcGofF()	const
 
 void CGoodnessOfFit::SetData(const int iDigit, const int iExpected, const int iObserved)
 {
-	//list<Expected*>::iterator first = m_lExp.begin();
-	//list<Expected*>::iterator last = m_lObs.end();
-	//while (first != last)
-	//{
-	//	if ((*first)->GetDigit() == iDigit)
-	//	{
-	//		(*first)->SetExp(iExpected);
-	//		(*m_lObs.begin())->SetDigit(iObserved);
-	//		break;
-	//	}
-	//	first++;
-	//	//	first._Ptr->_Myval->setExpectedValue(iExpected);
-	//	//	spisukdve.begin()._Ptr->_Myval->setObservedValue(iObserved);
-	//	//	break;
-	//	//}
-	//	//first++;	
-	//}
+	list<Expected*>::iterator first = m_lExp.begin();
+	list<Expected*>::iterator last = m_lExp.end();
+	while (first != last)
+	{
+		if ((*first)->GetDigit() == iDigit)
+		{
+			(*first)->SetExp(iExpected);
+			(*m_lObs.begin())->SetDigit(iObserved);
+			break;
+		}
+		first++;
+		//	first._Ptr->_Myval->setExpectedValue(iExpected);
+		//	spisukdve.begin()._Ptr->_Myval->setObservedValue(iObserved);
+		//	break;
+		//}
+		//first++;	
+	}
 }
 
 void CGoodnessOfFit::GetData(double& dChiCalc, double& dChiAlpha) const
